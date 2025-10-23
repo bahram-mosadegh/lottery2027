@@ -95,7 +95,7 @@
         <div class="card-body pt-2 p-3">
             <div class="row justify-content-center">
                 <div class="col-lg-4 col-md-4 mt-4">
-                    <h6>{{ __('message.passport_image') }} <span class="text-xs text-danger">({{__('message.optional')}})</span></h6>
+                    <h6>{{ __('message.passport_image') }} <span class="text-danger">*</span></h6>
                     <div class="text-center">
                         <form action="{{url('upload_file')}}" class="form-control dropzone" id="applicant_passport">
                         @csrf
@@ -107,6 +107,9 @@
                         </div>
                         </form>
                     </div>
+                    @error('applicant_passport')
+                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div class="col-lg-4 col-md-4 mt-4">
                     <h6>{{ __('message.face_image') }} <span class="text-danger">*</span></h6>
@@ -136,7 +139,7 @@
         <div class="card-body pt-2 p-3">
             <div class="row justify-content-center">
                 <div class="col-lg-4 col-md-4 mt-4">
-                    <h6>{{ __('message.passport_image') }} <span class="text-xs text-danger">({{__('message.optional')}})</span></h6>
+                    <h6>{{ __('message.passport_image') }} <span class="text-danger">*</span></h6>
                     <div class="text-center">
                         <form action="{{url('upload_file')}}" class="form-control dropzone" id="spouse_passport">
                         @csrf
@@ -149,6 +152,9 @@
                         </div>
                         </form>
                     </div>
+                    @error('spouse_passport')
+                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div class="col-lg-4 col-md-4 mt-4">
                     <h6>{{ __('message.face_image') }} <span class="text-danger">*</span></h6>
@@ -180,7 +186,7 @@
         <div class="card-body pt-2 p-3">
             <div class="row justify-content-center">
                 <div class="col-lg-4 col-md-4 mt-4">
-                    <h6>{{ __('message.passport_image') }} <span class="text-xs text-danger">({{__('message.optional')}})</span></h6>
+                    <h6>{{ __('message.passport_image') }} <span class="text-danger">*</span></h6>
                     <div class="text-center">
                         <form action="{{url('upload_file')}}" class="form-control dropzone" id="adult_child_passport_{{$index}}">
                         @csrf
@@ -193,6 +199,9 @@
                         </div>
                         </form>
                     </div>
+                    @error('adult_child_passport.'.$index)
+                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div class="col-lg-4 col-md-4 mt-4">
                     <h6>{{ __('message.face_image') }} <span class="text-danger">*</span></h6>
