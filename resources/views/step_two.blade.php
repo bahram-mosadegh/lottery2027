@@ -44,6 +44,24 @@
                 @csrf
                 <input type="hidden" name="applicant_id" value="{{$applicant ? $applicant->id : null}}">
                 <div class="row justify-content-center">
+                    <div class="col-lg-9 col-md-12 mt-4">
+                        <div class="form-group">
+                            <h6>{{ __('message.acquisition_channel') }} <span class="text-danger">*</span></h6>
+                            @php $acquisition_channel = old('acquisition_channel', $applicant->acquisition_channel); @endphp
+                            <select required class="form-control" name="acquisition_channel">
+                                <option value="">-- {{ __('message.select') }} --</option>
+                                <option value="social_media" {{$acquisition_channel == 'social_media' ? 'selected' : ''}}>{{ __('message.social_media') }}</option>
+                                <option value="friend_family" {{$acquisition_channel == 'friend_family' ? 'selected' : ''}}>{{ __('message.friend_family') }}</option>
+                                <option value="advertisement" {{$acquisition_channel == 'advertisement' ? 'selected' : ''}}>{{ __('message.advertisement') }}</option>
+                                <option value="search_engine" {{$acquisition_channel == 'search_engine' ? 'selected' : ''}}>{{ __('message.search_engine') }}</option>
+                                <option value="event" {{$acquisition_channel == 'event' ? 'selected' : ''}}>{{ __('message.event') }}</option>
+                                <option value="other" {{$acquisition_channel == 'other' ? 'selected' : ''}}>{{ __('message.other') }}</option>
+                                
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
                     <div class="col-lg-3 col-md-4 mt-4">
                         <div class="form-group">
                             <h6>{{ __('message.email') }} <span class="text-danger">*</span></h6>
@@ -90,9 +108,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row mt-4">
                     <div class="col-12">
-                        <h5 class="mb-0 text-center pt-4">{{ __('message.residence_information') }}</h5>
+                        <h5 class="mb-2 text-center pt-4">{{ __('message.residence_information') }}</h5>
                     </div>
                 </div>
                 <hr class="horizontal dark m-0 mt-1">
