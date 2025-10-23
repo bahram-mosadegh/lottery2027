@@ -173,8 +173,11 @@ return [
         'ammount' => 'مقدار',
         'expire_date' => 'تاریخ انقضا',
         'applicant_face' => 'تصویر چهره متقاضی اصلی',
+        'applicant_passport' => 'تصویر پاسپورت متقاضی اصلی',
         'spouse_face' => 'تصویر چهره همسر',
-        'adult_child_face.*' => 'تصویر فرزند 18 الی 21 سال',
+        'spouse_passport' => 'تصویر پاسپورت همسر',
+        'adult_child_face.*' => 'تصویر چهره فرزند 18 الی 21 سال',
+        'adult_child_passport.*' => 'تصویر پاسپورت فرزند 18 الی 21 سال',
         'child_face.*' => 'تصویر چهره فرزند زیر 18 سال',
     ],
 
