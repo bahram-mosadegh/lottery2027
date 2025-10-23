@@ -497,4 +497,12 @@ https://nilg.am/2b6',
 کد ورود: :code
 
 @:url #:code',
+    'acquisition_channel' => 'نحوه آشنایی با نیلگام',
+    'social_media' => 'شبکه‌های اجتماعی',
+    'friend_family' => 'دوستان یا خانواده',
+    'advertisement' => 'تبلیغات',
+    'search_engine' => 'موتور جستجو (مثل گوگل)',
+    'event' => 'رویداد یا نمایشگاه',
+    'job' => 'شغل',
+    'continents_visited' => 'سابقه سفر خارجی در 5 سال اخیر',
 ];
