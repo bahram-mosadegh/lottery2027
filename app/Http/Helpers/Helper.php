@@ -352,6 +352,17 @@ class Helper {
 			],
 		];
 	}
+
+	public static function get_continents_visited(): array
+	{
+		return [
+			'europe' => 'اروپا',
+			'america_canada' => 'آمریکا یا کانادا',
+			'east_asia' => 'آسیای شرقی',
+			'west_asia' => 'آسیای غربی',
+			'australia' => 'استرالیا',
+		];
+	}
 }
 
 ?>
