@@ -292,6 +292,7 @@ class RegisterController extends Controller
             }
 
             $attributes = request()->validate([
+                'acquisition_channel' => ['required', 'in:social_media,friend_family,advertisement,search_engine,event,other'],
                 'email' => ['required', 'email:rfc,dns'],
                 'education_degree' => ['required', 'in:primary_school_only,high_school_no_degree,high_school_degree,vocational_school,some_university_courses,university_degree,some_graduate_level_courses,masters_degree,doctorate_level_courses,doctorate_degree'],
                 'marital_status' => ['required', $applicant && $applicant->marital == 'single' ? 'in:unmarried,divorced,widowed' : 'in:married_us_citizen,married_not_us_citizen'],
@@ -360,29 +361,36 @@ class RegisterController extends Controller
             ])->find($applicant_id);
             
             request()->merge([
-                'applicant_face' => $applicant->face_image,
+                'applicant_passport' => $applicant->passport_image,
+                'applicant_face' => $applicant->face_image
             ]);
 
             $rules = [
-                'applicant_face' => ['required'],
+                'applicant_passport' => ['required'],
+                'applicant_face' => ['required']
             ];
 
             if ($applicant->spouse) {
                 request()->merge([
+                    'spouse_passport' => $applicant->spouse->passport_image,
                     'spouse_face' => $applicant->spouse->face_image,
                 ]);
 
+                $rules['spouse_passport'] = ['required'];
                 $rules['spouse_face'] = ['required'];
             }
 
             if ($applicant->adult_children_count) {
+                $rules['adult_child_passport.*'] = ['required'];
                 $rules['adult_child_face.*'] = ['required'];
                 $adult_child_face = [];
                 foreach($applicant->adult_children as $index => $adult_child) {
+                    $adult_child_passport[] = $adult_child->passport_image;
                     $adult_child_face[] = $adult_child->face_image;
                 }
 
                 request()->merge([
+                    'adult_child_passport' => $adult_child_passport,
                     'adult_child_face' => $adult_child_face,
                 ]);
             }
@@ -729,7 +737,7 @@ class RegisterController extends Controller
 
                         $update_data = [
                             $request->type.'_image' => $filename,
-                            'face_image_status' => 'not_selected'
+                            $request->type.'_image_status' => 'not_selected'
                         ];
 
                         if ($request->type == 'passport') {
@@ -921,6 +929,11 @@ class RegisterController extends Controller
                     }
                     
                     $passport_data['birth_city'] = isset($matches[2]) ? $matches[2] : null;
+                } elseif (preg_match('/^Date of Expiry[\s:]+(\d{2}\/\d{2}\/\d{4})/i', trim($text), $matches)) {
+                    if (isset($matches[1])) {
+                        $expire_date = explode('/', $matches[1]);
+                        $passport_data['expire_date'] = sprintf('%s-%s-%s', $expire_date[2], $expire_date[1], $expire_date[0]);
+                    }
                 }
             }
 
