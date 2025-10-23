@@ -11,6 +11,10 @@ class Applicant extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'continents_visited' => 'array'
+    ];
+
     public function spouse()
     {
         return $this->hasOne(Spouse::class);
