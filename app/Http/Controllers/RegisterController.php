@@ -436,7 +436,8 @@ class RegisterController extends Controller
             }
 
             request()->merge([
-                'applicant_birth_date' => request()->applicant_birth_year.'-'.request()->applicant_birth_month.'-'.request()->applicant_birth_day
+                'applicant_birth_date' => request()->applicant_birth_year.'-'.request()->applicant_birth_month.'-'.request()->applicant_birth_day,
+                'applicant_expire_date' => request()->applicant_expire_year.'-'.request()->applicant_expire_month.'-'.request()->applicant_expire_day
             ]);
 
             $rules = [
@@ -446,11 +447,16 @@ class RegisterController extends Controller
                 'applicant_birth_country' => ['required'],
                 'applicant_birth_city' => ['required'],
                 'applicant_birth_date' => ['required', 'regex:/^1\d\d\d\-(0\d|1[0-2])\-([0-2]\d|3[0-1])$/'],
+                'applicant_expire_date' => ['required', 'regex:/^1\d\d\d\-(0\d|1[0-2])\-([0-2]\d|3[0-1])$/'],
+                'applicant_job' => ['required'],
+                'applicant_continents_visited' => ['nullable'],
+                'applicant_continents_visited.*' => ['required', 'in:'.(implode(',', array_keys(\helper::get_continents_visited())))],
             ];
 
             if ($applicant->spouse) {
                 request()->merge([
-                    'spouse_birth_date' => request()->spouse_birth_year.'-'.request()->spouse_birth_month.'-'.request()->spouse_birth_day
+                    'spouse_birth_date' => request()->spouse_birth_year.'-'.request()->spouse_birth_month.'-'.request()->spouse_birth_day,
+                    'spouse_expire_date' => request()->spouse_expire_year.'-'.request()->spouse_expire_month.'-'.request()->spouse_expire_day,
                 ]);
 
                 $rules['spouse_name'] = ['required', 'regex:/^[ a-z]+$/i'];
@@ -459,6 +465,10 @@ class RegisterController extends Controller
                 $rules['spouse_birth_country'] = ['required'];
                 $rules['spouse_birth_city'] = ['required'];
                 $rules['spouse_birth_date'] = ['required', 'regex:/^1\d\d\d\-(0\d|1[0-2])\-([0-2]\d|3[0-1])$/'];
+                $rules['spouse_expire_date'] = ['required', 'regex:/^1\d\d\d\-(0\d|1[0-2])\-([0-2]\d|3[0-1])$/'];
+                $rules['spouse_job'] = ['required'];
+                $rules['spouse_continents_visited'] = ['nullable'];
+                $rules['spouse_continents_visited.*'] = ['required', 'in:'.(implode(',', array_keys(\helper::get_continents_visited())))];
                 if ($applicant->double_register) {
                     $rules['spouse_mobile'] = ['required', 'regex:/^09\d{9}$/'];
                     $rules['spouse_email'] = ['required', 'email:rfc,dns'];
@@ -469,7 +479,8 @@ class RegisterController extends Controller
             if (count($applicant->adult_children)) {
                 foreach ($applicant->adult_children as $adult_child) {
                     request()->merge([
-                        'adult_child_birth_date_'.$adult_child->id => request()->{'adult_child_birth_year_'.$adult_child->id}.'-'.request()->{'adult_child_birth_month_'.$adult_child->id}.'-'.request()->{'adult_child_birth_day_'.$adult_child->id}
+                        'adult_child_birth_date_'.$adult_child->id => request()->{'adult_child_birth_year_'.$adult_child->id}.'-'.request()->{'adult_child_birth_month_'.$adult_child->id}.'-'.request()->{'adult_child_birth_day_'.$adult_child->id},
+                        'adult_child_expire_date_'.$adult_child->id => request()->{'adult_child_expire_year_'.$adult_child->id}.'-'.request()->{'adult_child_expire_month_'.$adult_child->id}.'-'.request()->{'adult_child_expire_day_'.$adult_child->id},
                     ]);
 
                     $rules['adult_child_name_'.$adult_child->id] = ['required', 'regex:/^[ a-z]+$/i'];
@@ -478,6 +489,10 @@ class RegisterController extends Controller
                     $rules['adult_child_birth_country_'.$adult_child->id] = ['required'];
                     $rules['adult_child_birth_city_'.$adult_child->id] = ['required'];
                     $rules['adult_child_birth_date_'.$adult_child->id] = ['required', 'regex:/^1\d\d\d\-(0\d|1[0-2])\-([0-2]\d|3[0-1])$/'];
+                    $rules['adult_child_expire_date_'.$adult_child->id] = ['required', 'regex:/^1\d\d\d\-(0\d|1[0-2])\-([0-2]\d|3[0-1])$/'];
+                    $rules['adult_child_job_'.$adult_child->id] = ['required'];
+                    $rules['adult_child_continents_visited_'.$adult_child->id] = ['nullable'];
+                    $rules['adult_child_continents_visited_'.$adult_child->id.'.*'] = ['required', 'in:'.(implode(',', array_keys(\helper::get_continents_visited())))];
                     if (($applicant->payment_status == 'paid' && $adult_child->independent_register) || ($applicant->payment_status == 'unpaid' && request()->{'independent_register_'.$adult_child->id})) {
                         $rules['adult_child_mobile_'.$adult_child->id] = ['required', 'regex:/^09\d{9}$/'];
                         $rules['adult_child_email_'.$adult_child->id] = ['required', 'email:rfc,dns'];
@@ -509,6 +524,9 @@ class RegisterController extends Controller
             $applicant->birth_country = request()->applicant_birth_country;
             $applicant->birth_city = request()->applicant_birth_city;
             $applicant->birth_date_fa = request()->applicant_birth_date;
+            $applicant->expire_date_fa = request()->applicant_expire_date;
+            $applicant->job = request()->applicant_job;
+            $applicant->continents_visited = request()->applicant_continents_visited;
             $applicant->save();
 
             if ($applicant->spouse) {
@@ -518,6 +536,9 @@ class RegisterController extends Controller
                 $applicant->spouse->birth_country = request()->spouse_birth_country;
                 $applicant->spouse->birth_city = request()->spouse_birth_city;
                 $applicant->spouse->birth_date_fa = request()->spouse_birth_date;
+                $applicant->spouse->expire_date_fa = request()->spouse_expire_date;
+                $applicant->spouse->job = request()->spouse_job;
+                $applicant->spouse->continents_visited = request()->spouse_continents_visited;
                 if ($applicant->double_register) {
                     $applicant->spouse->double_register = 1;
                     $applicant->spouse->mobile = request()->spouse_mobile;
@@ -538,6 +559,9 @@ class RegisterController extends Controller
                     $adult_child->birth_country = $attributes['adult_child_birth_country_'.$adult_child->id];
                     $adult_child->birth_city = $attributes['adult_child_birth_city_'.$adult_child->id];
                     $adult_child->birth_date_fa = $attributes['adult_child_birth_date_'.$adult_child->id];
+                    $adult_child->expire_date_fa = $attributes['adult_child_expire_date_'.$adult_child->id];
+                    $adult_child->job = $attributes['adult_child_job_'.$adult_child->id];
+                    $adult_child->continents_visited = $attributes['adult_child_continents_visited_'.$adult_child->id];
                     if (($applicant->payment_status == 'paid' && $adult_child->independent_register) || ($applicant->payment_status == 'unpaid' && request()->{'independent_register_'.$adult_child->id})) {
                         $adult_child->independent_register = 1;
                         $adult_child->mobile = $attributes['adult_child_mobile_'.$adult_child->id];
@@ -933,6 +957,7 @@ class RegisterController extends Controller
                     if (isset($matches[1])) {
                         $expire_date = explode('/', $matches[1]);
                         $passport_data['expire_date'] = sprintf('%s-%s-%s', $expire_date[2], $expire_date[1], $expire_date[0]);
+                        $passport_data['expire_date_fa'] = \Helper::gregorian_to_jalali($expire_date[2], $expire_date[1], $expire_date[0], '-');
                     }
                 }
             }
