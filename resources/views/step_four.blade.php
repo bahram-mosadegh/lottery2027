@@ -140,6 +140,69 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row justify-content-center">
+                            <div class="col-lg-4 col-md-4">
+                                <div class="form-group">
+                                    <h6>{{ __('message.job') }} <span class="text-danger">*</span></h6>
+                                    <input required class="form-control" value="{{old('applicant_job', $applicant->job)}}" type="text" placeholder="{{ __('message.job') }}" name="applicant_job">
+                                    @error('applicant_job')
+                                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4">
+                                <div class="form-group">
+                                    <h6>{{ __('message.continents_visited') }} <span class="text-danger text-xs">({{__('message.optional')}})</span></h6>
+                                    @php $applicant_continents_visited = old('applicant_continents_visited', ($applicant->continents_visited ? $applicant->continents_visited : [])); @endphp
+                                    <select class="form-control continents_visited" name="applicant_continents_visited[]" id="applicant_continents_visited" multiple>
+                                        @foreach(\helper::get_continents_visited() as $continent => $text)
+                                        <option value="{{ $continent }}" {{in_array($continent, $applicant_continents_visited) ? 'selected' : ''}}>{{ $text }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4">
+                                <h6>{{ __('message.expire_date_shamsi') }} <span class="text-danger">*</span></h6>
+                                <div class="row">
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            @php $applicant_expire_day = old('applicant_expire_day', ($applicant->expire_date_fa ? explode('-', $applicant->expire_date_fa)[2] : null)); @endphp
+                                            <select required class="form-control" name="applicant_expire_day" id="applicant_expire_day">
+                                                <option value="">{{ __('message.day') }}</option>
+                                                @for($i=1; $i<=31; $i++)
+                                                <option value="{{ sprintf('%02d', $i) }}" {{$applicant_expire_day == $i ? 'selected' : ''}}>{{ $i }}</option>
+                                                @endfor
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 p-0">
+                                        <div class="form-group">
+                                            @php $applicant_expire_month = old('applicant_expire_month', ($applicant->expire_date_fa ? explode('-', $applicant->expire_date_fa)[1] : null)); @endphp
+                                            <select required class="form-control" name="applicant_expire_month" id="applicant_expire_month">
+                                                <option value="">{{ __('message.month') }}</option>
+                                                @foreach(\helper::get_monthes() as $code => $month)
+                                                <option value="{{ $code }}" {{$applicant_expire_month == $code ? 'selected' : ''}}>{{ $month }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            @php
+                                            $applicant_expire_year = old('applicant_expire_year', ($applicant->expire_date_fa ? explode('-', $applicant->expire_date_fa)[0] : null));
+                                            $this_year = \Helper::gregorian_to_jalali(date('Y'),date('m'),date('d'))[0];
+                                            @endphp
+                                            <select required class="form-control" name="applicant_expire_year" id="applicant_expire_year">
+                                                <option value="">{{ __('message.year') }}</option>
+                                                @for($i=($this_year); $i<($this_year+10); $i++)
+                                                <option value="{{ $i }}" {{$applicant_expire_year == $i ? 'selected' : ''}}>{{ $i }}</option>
+                                                @endfor
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -237,6 +300,69 @@
                                                 <option value="">{{ __('message.year') }}</option>
                                                 @for($i=($this_year-12); $i>($this_year-100); $i--)
                                                 <option value="{{ $i }}" {{$spouse_birth_year == $i ? 'selected' : ''}}>{{ $i }}</option>
+                                                @endfor
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-lg-4 col-md-4">
+                                <div class="form-group">
+                                    <h6>{{ __('message.job') }} <span class="text-danger">*</span></h6>
+                                    <input required class="form-control" value="{{old('spouse_job', $applicant->spouse->job)}}" type="text" placeholder="{{ __('message.job') }}" name="spouse_job">
+                                    @error('spouse_job')
+                                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4">
+                                <div class="form-group">
+                                    <h6>{{ __('message.continents_visited') }} <span class="text-danger text-xs">({{__('message.optional')}})</span></h6>
+                                    @php $spouse_continents_visited = old('spouse_continents_visited', ($applicant->spouse->continents_visited ? $applicant->spouse->continents_visited : [])); @endphp
+                                    <select class="form-control continents_visited" name="spouse_continents_visited[]" id="spouse_continents_visited" multiple>
+                                        @foreach(\helper::get_continents_visited() as $continent => $text)
+                                        <option value="{{ $continent }}" {{in_array($continent, $spouse_continents_visited) ? 'selected' : ''}}>{{ $text }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4">
+                                <h6>{{ __('message.expire_date_shamsi') }} <span class="text-danger">*</span></h6>
+                                <div class="row">
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            @php $spouse_expire_day = old('spouse_expire_day', ($applicant->spouse->expire_date_fa ? explode('-', $applicant->spouse->expire_date_fa)[2] : null)); @endphp
+                                            <select required class="form-control" name="spouse_expire_day" id="spouse_expire_day">
+                                                <option value="">{{ __('message.day') }}</option>
+                                                @for($i=1; $i<=31; $i++)
+                                                <option value="{{ sprintf('%02d', $i) }}" {{$spouse_expire_day == $i ? 'selected' : ''}}>{{ $i }}</option>
+                                                @endfor
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 p-0">
+                                        <div class="form-group">
+                                            @php $spouse_expire_month = old('spouse_expire_month', ($applicant->spouse->expire_date_fa ? explode('-', $applicant->spouse->expire_date_fa)[1] : null)); @endphp
+                                            <select required class="form-control" name="spouse_expire_month" id="spouse_expire_month">
+                                                <option value="">{{ __('message.month') }}</option>
+                                                @foreach(\helper::get_monthes() as $code => $month)
+                                                <option value="{{ $code }}" {{$spouse_expire_month == $code ? 'selected' : ''}}>{{ $month }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            @php
+                                            $spouse_expire_year = old('spouse_expire_year', ($applicant->spouse->expire_date_fa ? explode('-', $applicant->spouse->expire_date_fa)[0] : null));
+                                            $this_year = \Helper::gregorian_to_jalali(date('Y'),date('m'),date('d'))[0];
+                                            @endphp
+                                            <select required class="form-control" name="spouse_expire_year" id="spouse_expire_year">
+                                                <option value="">{{ __('message.year') }}</option>
+                                                @for($i=($this_year); $i<($this_year+10); $i++)
+                                                <option value="{{ $i }}" {{$spouse_expire_year == $i ? 'selected' : ''}}>{{ $i }}</option>
                                                 @endfor
                                             </select>
                                         </div>
@@ -391,6 +517,69 @@
                                                 <option value="">{{ __('message.year') }}</option>
                                                 @for($i=($this_year-17); $i>($this_year-22); $i--)
                                                 <option value="{{ $i }}" {{$birth_year == $i ? 'selected' : ''}}>{{ $i }}</option>
+                                                @endfor
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-lg-4 col-md-4">
+                                <div class="form-group">
+                                    <h6>{{ __('message.job') }} <span class="text-danger">*</span></h6>
+                                    <input required class="form-control" value="{{old('adult_child_job_'.$adult_child->id, $adult_child->job)}}" type="text" placeholder="{{ __('message.job') }}" name="adult_child_job_{{$adult_child->id}}">
+                                    @error('adult_child_job_'.$adult_child->id)
+                                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4">
+                                <div class="form-group">
+                                    <h6>{{ __('message.continents_visited') }} <span class="text-danger text-xs">({{__('message.optional')}})</span></h6>
+                                    @php $adult_child_continents_visited = old('adult_child_continents_visited_'.$adult_child->id, ($adult_child->continents_visited ? $adult_child->continents_visited : [])); @endphp
+                                    <select class="form-control continents_visited" name="adult_child_continents_visited_{{$adult_child->id}}[]" multiple>
+                                        @foreach(\helper::get_continents_visited() as $continent => $text)
+                                        <option value="{{ $continent }}" {{in_array($continent, $adult_child_continents_visited) ? 'selected' : ''}}>{{ $text }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4">
+                                <h6>{{ __('message.expire_date_shamsi') }} <span class="text-danger">*</span></h6>
+                                <div class="row">
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            @php $adult_child_expire_day = old('adult_child_expire_day_'.$adult_child->id, ($adult_child->expire_date_fa ? explode('-', $adult_child->expire_date_fa)[2] : null)); @endphp
+                                            <select required class="form-control" name="adult_child_expire_day_{{$adult_child->id}}">
+                                                <option value="">{{ __('message.day') }}</option>
+                                                @for($i=1; $i<=31; $i++)
+                                                <option value="{{ sprintf('%02d', $i) }}" {{$adult_child_expire_day == $i ? 'selected' : ''}}>{{ $i }}</option>
+                                                @endfor
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 p-0">
+                                        <div class="form-group">
+                                            @php $adult_child_expire_month = old('adult_child_expire_month_'.$adult_child->id, ($adult_child->expire_date_fa ? explode('-', $adult_child->expire_date_fa)[1] : null)); @endphp
+                                            <select required class="form-control" name="adult_child_expire_month_{{$adult_child->id}}">
+                                                <option value="">{{ __('message.month') }}</option>
+                                                @foreach(\helper::get_monthes() as $code => $month)
+                                                <option value="{{ $code }}" {{$adult_child_expire_month == $code ? 'selected' : ''}}>{{ $month }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            @php
+                                            $adult_child_expire_year = old('adult_child_expire_year_'.$adult_child->id, ($adult_child->expire_date_fa ? explode('-', $adult_child->expire_date_fa)[0] : null));
+                                            $this_year = \Helper::gregorian_to_jalali(date('Y'),date('m'),date('d'))[0];
+                                            @endphp
+                                            <select required class="form-control" name="adult_child_expire_year_{{$adult_child->id}}">
+                                                <option value="">{{ __('message.year') }}</option>
+                                                @for($i=($this_year); $i<($this_year+10); $i++)
+                                                <option value="{{ $i }}" {{$adult_child_expire_year == $i ? 'selected' : ''}}>{{ $i }}</option>
                                                 @endfor
                                             </select>
                                         </div>
@@ -558,6 +747,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $('.country').select2();
+        $('.continents_visited').select2();
     });
 </script>
 @endsection
