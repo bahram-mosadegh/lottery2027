@@ -19,6 +19,7 @@ class AddPersonalInfoColumnsToApplicantsTable extends Migration
             $table->string('job')->nullable()->after('education_degree');
             $table->string('acquisition_channel')->nullable()->after('education_degree');
             $table->enum('passport_image_status', ['not_selected', 'accepted', 'rejected'])->after('passport_image');
+            $table->string('expire_date_fa')->nullable()->after('expire_date');
         });
     }
 
@@ -35,6 +36,7 @@ class AddPersonalInfoColumnsToApplicantsTable extends Migration
             $table->dropColumn('job');
             $table->dropColumn('acquisition_channel');
             $table->dropColumn('passport_image_status');
+            $table->dropColumn('expire_date_fa');
         });
     }
 }
