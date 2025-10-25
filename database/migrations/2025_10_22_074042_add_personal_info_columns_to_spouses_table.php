@@ -18,6 +18,7 @@ class AddPersonalInfoColumnsToSpousesTable extends Migration
             $table->boolean('had_foreign_trip')->nullable()->after('education_degree');
             $table->string('job')->nullable()->after('education_degree');
             $table->enum('passport_image_status', ['not_selected', 'accepted', 'rejected'])->after('passport_image');
+            $table->string('expire_date_fa')->nullable()->after('expire_date');
         });
     }
 
@@ -33,6 +34,7 @@ class AddPersonalInfoColumnsToSpousesTable extends Migration
             $table->dropColumn('had_foreign_trip');
             $table->dropColumn('job');
             $table->dropColumn('passport_image_status');
+            $table->dropColumn('expire_date_fa');
         });
     }
 }
