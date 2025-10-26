@@ -35,20 +35,20 @@
                     </div>
                     <div class="row justify-content-center">
                         <div class="col-6 text-center">
-                            <form action="{{url('check_data')}}" method="POST">
+                            <form action="{{url('check_data/'.$image)}}" method="POST">
                                 @csrf
                                 <input type="hidden" name="id" value="{{$data['id']}}">
                                 <input type="hidden" name="type" value="{{$data['type']}}">
-                                <input type="hidden" name="face_image_status" value="accepted">
+                                <input type="hidden" name="{{$image}}_status" value="accepted">
                                 <button type="submit" class="w-100 btn bg-gradient-success btn-lg mt-4 mb-4">{{ __('message.accept') }}</button>
                             </form>
                         </div>
                         <div class="col-6 text-center">
-                            <form action="{{url('check_data')}}" method="POST">
+                            <form action="{{url('check_data/'.$image)}}" method="POST">
                                 @csrf
                                 <input type="hidden" name="id" value="{{$data['id']}}">
                                 <input type="hidden" name="type" value="{{$data['type']}}">
-                                <input type="hidden" name="face_image_status" value="rejected">
+                                <input type="hidden" name="{{$image}}_status" value="rejected">
                                 <button type="submit" class="w-100 btn bg-gradient-danger btn-lg mt-4 mb-4">{{ __('message.reject') }}</button>
                             </form>
                         </div>
