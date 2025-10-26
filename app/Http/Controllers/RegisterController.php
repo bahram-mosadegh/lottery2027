@@ -1029,16 +1029,16 @@ class RegisterController extends Controller
         ];
 
         if ($applicant) {
-            $step_image = $applicant->face_image_status == 'rejected' ? true : false;
+            $step_image = $applicant->face_image_status == 'rejected' || $applicant->passport_image_status == 'rejected' ? true : false;
             
             if (!$step_image) {
                 if ($applicant->spouse) {
-                    $step_image = $applicant->spouse->face_image_status == 'rejected' ? true : false;
+                    $step_image = $applicant->spouse->face_image_status == 'rejected' || $applicant->spouse->passport_image_status == 'rejected' ? true : false;
                 }
 
                 if (!$step_image) {
                     foreach ($applicant->adult_children as $adult_child) {
-                        if ($adult_child->face_image_status == 'rejected') {
+                        if ($adult_child->face_image_status == 'rejected' || $adult_child->passport_image_status == 'rejected') {
                             $step_image = true;
                             break;
                         }
@@ -1047,7 +1047,7 @@ class RegisterController extends Controller
 
                 if (!$step_image) {
                     foreach ($applicant->children as $child) {
-                        if ($child->face_image_status == 'rejected') {
+                        if ($child->face_image_status == 'rejected' || $child->passport_image_status == 'rejected') {
                             $step_image = true;
                             break;
                         }
@@ -1106,52 +1106,61 @@ class RegisterController extends Controller
         return $steps;
     }
 
-    public function check_data()
+    public function check_data($image)
     {
-        $applicant = Applicant::where('face_image', '<>', null)->where('face_image_status', 'not_selected')->where('payment_status', 'paid')->inRandomOrder()->first();
+        if (!in_array($image, ['face_image', 'passport_image'])) {
+            abort(404);
+        }
+
+        $applicant = Applicant::where($image, '<>', null)
+            ->where($image.'_status', 'not_selected')
+            ->where('payment_status', 'paid')
+            ->inRandomOrder()
+            ->first();
+
         if ($applicant) {
             $data = [
                 'id' => $applicant->id,
                 'type' => 'applicants',
-                'image' => url('uploads/'.$applicant->face_image),
+                'image' => url('uploads/'.$applicant->{$image}),
                 'person' => $applicant,
-                'link' => url('step_zero?mobile='.substr($applicant->mobile,1).'&registration_type='.$applicant->registration_type)
+                'link' => url('step_zero?mobile='.$applicant->mobile.'&registration_type='.$applicant->registration_type)
             ];
         } else {
             $spouse = Spouse::whereHas('applicant', function ($q) {
                 return $q->where('payment_status', 'paid');
-            })->where('face_image', '<>', null)->where('face_image_status', 'not_selected')->inRandomOrder()->first();
+            })->where($image, '<>', null)->where($image.'_status', 'not_selected')->inRandomOrder()->first();
             if ($spouse) {
                 $data = [
                     'id' => $spouse->id,
                     'type' => 'spouses',
-                    'image' => url('uploads/'.$spouse->face_image),
+                    'image' => url('uploads/'.$spouse->{$image}),
                     'person' => $spouse,
-                    'link' => url('step_zero?mobile='.substr($spouse->applicant->mobile,1).'&registration_type='.$spouse->applicant->registration_type)
+                    'link' => url('step_zero?mobile='.$spouse->applicant->mobile.'&registration_type='.$spouse->applicant->registration_type)
                 ];
             } else {
                 $adult_child = AdultChild::whereHas('applicant', function ($q) {
                     return $q->where('payment_status', 'paid');
-                })->where('face_image', '<>', null)->where('face_image_status', 'not_selected')->inRandomOrder()->first();
+                })->where($image, '<>', null)->where($image.'_status', 'not_selected')->inRandomOrder()->first();
                 if ($adult_child) {
                     $data = [
                         'id' => $adult_child->id,
                         'type' => 'adult_children',
-                        'image' => url('uploads/'.$adult_child->face_image),
+                        'image' => url('uploads/'.$adult_child->{$image}),
                         'person' => $adult_child,
-                        'link' => url('step_zero?mobile='.substr($adult_child->applicant->mobile,1).'&registration_type='.$adult_child->applicant->registration_type)
+                        'link' => url('step_zero?mobile='.$adult_child->applicant->mobile.'&registration_type='.$adult_child->applicant->registration_type)
                     ];
                 } else {
                     $child = Child::whereHas('applicant', function ($q) {
                         return $q->where('payment_status', 'paid');
-                    })->where('face_image', '<>', null)->where('face_image_status', 'not_selected')->inRandomOrder()->first();
+                    })->where($image, '<>', null)->where($image.'_status', 'not_selected')->inRandomOrder()->first();
                     if ($child) {
                         $data = [
                             'id' => $child->id,
                             'type' => 'children',
-                            'image' => url('uploads/'.$child->face_image),
+                            'image' => url('uploads/'.$child->{$image}),
                             'person' => $child,
-                            'link' => url('step_zero?mobile='.substr($child->applicant->mobile,1).'&registration_type='.$child->applicant->registration_type)
+                            'link' => url('step_zero?mobile='.$child->applicant->mobile.'&registration_type='.$child->applicant->registration_type)
                         ];
                     } else {
                         $data = [
@@ -1166,86 +1175,90 @@ class RegisterController extends Controller
             }
         }
         
-        return view('check_data', ['data' => $data]);
+        return view('check_data', ['data' => $data, 'image' => $image]);
     }
 
-    public function check_data_post()
+    public function check_data_post($image)
     {
+        if (!in_array($image, ['face_image', 'passport_image'])) {
+            abort(404);
+        }
+
         $attributes = request()->validate([
-            'id' => ['required', 'exists:'.request()->type.',id,face_image_status,not_selected'],
+            'id' => ['required', 'exists:'.request()->type.',id,'.$image.'_status,not_selected'],
             'type' => ['required', 'in:applicants,spouses,adult_children,children'],
-            'face_image_status' => ['required', 'in:accepted,rejected']
+            $image.'_status' => ['required', 'in:accepted,rejected']
         ]);
 
         if ($attributes['type'] == 'applicants') {
-            if ($attributes['face_image_status'] == 'rejected') {
+            if ($attributes[$image.'_status'] == 'rejected') {
                 $applicant = Applicant::where('id', $attributes['id'])->first();
                 $applicant_id = $attributes['id'];
                 $applicant->update([
-                    'face_image_status' => $attributes['face_image_status']
+                    $image.'_status' => $attributes[$image.'_status']
                 ]);
                 $applicant->save();
                 $name_label = $applicant->name.' '.$applicant->last_name;
             } else {
                 Applicant::where('id', $attributes['id'])->update([
-                    'face_image_status' => $attributes['face_image_status']
+                    $image.'_status' => $attributes[$image.'_status']
                 ]);
             }
         }
 
         if ($attributes['type'] == 'spouses') {
-            if ($attributes['face_image_status'] == 'rejected') {
+            if ($attributes[$image.'_status'] == 'rejected') {
                 $spouse = Spouse::where('id', $attributes['id'])->first();
                 $applicant_id = $spouse->applicant_id;
                 $spouse->update([
-                    'face_image_status' => $attributes['face_image_status']
+                    $image.'_status' => $attributes[$image.'_status']
                 ]);
                 $spouse->save();
                 $name_label = $spouse->name.' '.$spouse->last_name;
             } else {
                 Spouse::where('id', $attributes['id'])->update([
-                    'face_image_status' => $attributes['face_image_status']
+                    $image.'_status' => $attributes[$image.'_status']
                 ]);
             }
         }
 
         if ($attributes['type'] == 'adult_children') {
-            if ($attributes['face_image_status'] == 'rejected') {
+            if ($attributes[$image.'_status'] == 'rejected') {
                 $adult_child = AdultChild::where('id', $attributes['id'])->first();
                 $applicant_id = $adult_child->applicant_id;
                 $adult_child->update([
-                    'face_image_status' => $attributes['face_image_status']
+                    $image.'_status' => $attributes[$image.'_status']
                 ]);
                 $adult_child->save();
                 $name_label = $adult_child->name.' '.$adult_child->last_name;
             } else {
                 AdultChild::where('id', $attributes['id'])->update([
-                    'face_image_status' => $attributes['face_image_status']
+                    $image.'_status' => $attributes[$image.'_status']
                 ]);
             }
         }
 
         if ($attributes['type'] == 'children') {
-            if ($attributes['face_image_status'] == 'rejected') {
+            if ($attributes[$image.'_status'] == 'rejected') {
                 $child = Child::where('id', $attributes['id'])->first();
                 $applicant_id = $child->applicant_id;
                 $child->update([
-                    'face_image_status' => $attributes['face_image_status']
+                    $image.'_status' => $attributes[$image.'_status']
                 ]);
                 $child->save();
                 $name_label = $child->name.' '.$child->last_name;
             } else {
                 Child::where('id', $attributes['id'])->update([
-                    'face_image_status' => $attributes['face_image_status']
+                    $image.'_status' => $attributes[$image.'_status']
                 ]);
             }
         }
 
-        if ($attributes['face_image_status'] == 'rejected') {
-            send_sms::dispatch($applicant_id, sprintf(__('message.applicant_image_regected_sms'), ucwords(strtolower($name_label))), 'check_data');
+        if ($attributes[$image.'_status'] == 'rejected') {
+            send_sms::dispatch($applicant_id, sprintf(__('message.applicant_image_regected_sms'), __('message.'.$image), ucwords(strtolower($name_label))), 'check_data');
         }
 
-        return redirect('check_data')->with('success', __('message.face_image_status').' '.__('message.updated_successfully'));
+        return redirect('check_data/'.$image)->with('success', __('message.'.$image.'_status').' '.__('message.updated_successfully'));
     }
 
     public function create_in_crm_bulk($limit = 10)
