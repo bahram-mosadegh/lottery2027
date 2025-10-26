@@ -26,16 +26,16 @@ class ApplicantDataTable extends DataTable
             })->addColumn('has_rejected', function(Applicant $applicant) {
                 $has_rejected = 0;
                 if ($applicant->payment_status == 'paid') {
-                    $has_rejected = $applicant->face_image_status == 'rejected' ? 1 : 0;
+                    $has_rejected = $applicant->face_image_status == 'rejected' || $applicant->passport_image_status == 'rejected' ? 1 : 0;
             
                     if (!$has_rejected) {
                         if ($applicant->spouse) {
-                            $has_rejected = $applicant->spouse->face_image_status == 'rejected' ? 1 : 0;
+                            $has_rejected = $applicant->spouse->face_image_status == 'rejected' || $applicant->spouse->passport_image_status == 'rejected' ? 1 : 0;
                         }
 
                         if (!$has_rejected) {
                             foreach ($applicant->adult_children as $adult_child) {
-                                if ($adult_child->face_image_status == 'rejected') {
+                                if ($adult_child->face_image_status == 'rejected' || $adult_child->passport_image_status == 'rejected') {
                                     $has_rejected = 1;
                                     break;
                                 }
@@ -44,7 +44,7 @@ class ApplicantDataTable extends DataTable
 
                         if (!$has_rejected) {
                             foreach ($applicant->children as $child) {
-                                if ($child->face_image_status == 'rejected') {
+                                if ($child->face_image_status == 'rejected' || $child->passport_image_status == 'rejected') {
                                     $has_rejected = 1;
                                     break;
                                 }
