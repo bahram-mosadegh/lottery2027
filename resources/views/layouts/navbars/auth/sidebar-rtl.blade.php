@@ -19,11 +19,19 @@
       </li>
       @can('check_data')
       <li class="nav-item">
-        <a class="nav-link {{ (Request::is('check_data') ? 'active' : '') }}" href="{{ url('check_data') }}">
+        <a class="nav-link {{ (Request::is('check_data/face_image') ? 'active' : '') }}" href="{{ url('check_data/face_image') }}">
             <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center ms-2 d-flex align-items-center justify-content-center">
-                <i style="font-size: 1rem;" class="fa fa-lg fa-check-square ps-2 pe-2 text-center text-dark {{ (Request::is('check_data') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+                <i style="font-size: 1rem;" class="fa fa-image ps-2 pe-2 text-center text-dark {{ (Request::is('check_data/face_image') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
             </div>
-            <span class="nav-link-text me-1">{{ __('message.check_data') }}</span>
+            <span class="nav-link-text me-1">{{ __('message.check_face_image') }}</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {{ (Request::is('check_data/passport_image') ? 'active' : '') }}" href="{{ url('check_data/passport_image') }}">
+            <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center ms-2 d-flex align-items-center justify-content-center">
+                <i style="font-size: 1rem;" class="fa fa-passport ps-2 pe-2 text-center text-dark {{ (Request::is('check_data/passport_image') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+            </div>
+            <span class="nav-link-text me-1">{{ __('message.check_passport_image') }}</span>
         </a>
       </li>
       @endcan
