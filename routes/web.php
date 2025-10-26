@@ -25,8 +25,8 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('change_user_permission/{id}', [UserController::class, 'change_user_permission']);
 
 	Route::get('applicants', [RegisterController::class, 'index']);
-	Route::get('check_data', [RegisterController::class, 'check_data']);
-	Route::post('check_data', [RegisterController::class, 'check_data_post']);
+	Route::get('check_data/{image}', [RegisterController::class, 'check_data']);
+	Route::post('check_data/{image}', [RegisterController::class, 'check_data_post']);
 
 	// Route::get('coupons', [CouponController::class, 'index']);
 	// Route::get('add_coupon', [CouponController::class, 'add_get']);
